@@ -194,5 +194,43 @@ describe('Scope', function() {
       scope.$digest();
       expect(scope.counter).to.equal(1)
     })
+
+    it('comparse based on value if enabled', function() {
+      scope.aValue = [1, 2, 3];
+      scope.counter = 0;
+
+      scope.$watch(
+        function(scope) { return scope.aValue; },
+        function(newValue, oldValue, scope) {
+          return scope.counter++;
+        },
+        true
+      )
+
+      scope.$digest();
+      expect(scope.counter).to.equal(1)
+
+      scope.aValue.push(4)
+      scope.$digest();
+      expect(scope.counter).to.equal(2)
+    })
+
+    it('correctly handles NaNs', function() {
+      scope.number = 0/0;
+      scope.counter = 0;
+
+      scope.$watch(
+        function(scope) { return scope.number; },
+        function(newValue, oldValue, scope) {
+          return scope.counter++;
+        }
+      )
+
+      scope.$digest();
+      expect(scope.counter).to.equal(1);
+
+      scope.$digest();
+      expect(scope.counter).to.equal(1)
+    })
   });
 });
