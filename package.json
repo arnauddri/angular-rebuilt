@@ -1,0 +1,31 @@
+{
+  "name": "angular-rebuilt",
+  "version": "0.0.0",
+  "description": "My own version of Angular, built to understand its source code",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha test/* -w",
+    "test:watch": "npm run test -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/arnauddri/angular-rebuilt.git"
+  },
+  "author": "= <=>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/arnauddri/angular-rebuilt/issues"
+  },
+  "homepage": "https://github.com/arnauddri/angular-rebuilt",
+  "dependencies": {
+    "lodash": "^2.4.1",
+    "chai": "^1.10.0",
+    "sinon": "^1.12.2"
+  },
+  "devDependencies": {
+    "mocha": "^2.0.1"
+  }
+}
