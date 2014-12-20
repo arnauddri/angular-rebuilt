@@ -1,6 +1,7 @@
 /* jshint globalstrict: true */
 /* global Scope: false */
 'use strict';
+var _      = require('lodash')
 var chai   = require('chai');
 var sinon  = require('sinon');
 var expect = chai.expect;
@@ -147,8 +148,30 @@ describe('Scope', function() {
         }
       )
 
-      expect(function() { scope.$digest() }).to.throw('10 digest iterations reached')
+      expect(function() { scope.$digest() })
+        .to.throw('10 digest iterations reached')
+    })
 
+    it('ends the digest when the last watch is clean', function() {
+      scope.array = _.range(100)
+      var watchExecutions = 0;
+
+      _.times(100, function(i) {
+        scope.$watch(
+          function(scope) {
+            watchExecutions++;
+            return scope.array[i];
+          },
+          function(newValue, oldValue, scope) {}
+        )
+      });
+
+      scope.$digest();
+      expect(watchExecutions).to.equal(200)
+
+      scope.array[0] = 420;
+      scope.$digest();
+      expect(watchExecutions).to.equal(301)
     })
   });
 });
