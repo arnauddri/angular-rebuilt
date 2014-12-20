@@ -22,10 +22,18 @@ Scope.prototype.$watch = function(watchFn, listenerFn) {
 }
 
 Scope.prototype.$digest = function() {
-  var self = this;
-  var newValue, oldValue;
+  var dirty;
 
-  _.forEach(this.$$watchers, function(watcher) {
+  do {
+    dirty = this.$$digestOnce();
+  } while (dirty);
+};
+
+Scope.prototype.$$digestOnce = function() {
+  var self = this;
+  var newValue, oldValue, dirty;
+
+  this.$$watchers.forEach(function(watcher) {
     newValue = watcher.watchFn(self);
     oldValue = watcher.last;
 
@@ -36,8 +44,11 @@ Scope.prototype.$digest = function() {
         (oldValue === initWatchVal ? newValue : oldValue),
         self
       );
+      dirty = true;
     }
-  })
+  });
+
+  return dirty;
 };
 
 function initWatchVal() {}

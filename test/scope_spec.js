@@ -101,5 +101,32 @@ describe('Scope', function() {
       scope.$digest();
       expect(watchFn.called).to.be.true
     })
+
+    it('triggers chained watchers in the same digest', function() {
+      scope.name = 'Jane';
+
+      scope.$watch(
+        function(scope) { return scope.nameUpper; },
+        function(newValue, oldValue, scope) {
+          if (newValue)
+            scope.initial = newValue.substring(0, 1) + '.';
+        }
+      )
+
+      scope.$watch(
+        function(scope) { return scope.name; },
+        function(newValue, oldValue, scope) {
+          if (newValue)
+            scope.nameUpper = newValue.toUpperCase();
+        }
+      )
+
+      scope.$digest();
+      expect(scope.initial).to.equal('J.');
+
+      scope.name = 'Bob';
+      scope.$digest();
+      expect(scope.initial).to.equal('B.')
+    })
   });
 });
