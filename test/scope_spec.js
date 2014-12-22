@@ -17,7 +17,7 @@ describe('Scope', function() {
     expect(scope.aProperty).to.equal(1)
   })
 
-  describe('digest', function() {
+  describe('$digest', function() {
     var scope;
 
     beforeEach(function() {
@@ -231,6 +231,34 @@ describe('Scope', function() {
 
       scope.$digest();
       expect(scope.counter).to.equal(1)
+    })
+  });
+
+  describe('$eval', function() {
+    var scope;
+
+    beforeEach(function() {
+      scope = new Scope();
+    })
+
+    it('executes $eval\'ed function and returns result', function() {
+      scope.aValue = 42;
+
+      var result = scope.$eval(function(scope) {
+        return scope.aValue;
+      })
+
+      expect(result).to.equal(42)
+    })
+
+    it('passes the second $eval argument straight through', function() {
+      scope.aValue = 42;
+
+      var result = scope.$eval(function(scope, arg) {
+        return scope.aValue + arg;
+      }, 2)
+
+      expect(result).to.equal(44)
     })
   });
 });
