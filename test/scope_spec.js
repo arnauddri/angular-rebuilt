@@ -526,4 +526,51 @@ describe('Scope', function() {
       }, 50)
     })
   });
+
+  describe('$$postDigest', function() {
+    var scope;
+
+    beforeEach(function() {
+      scope = new Scope();
+    })
+
+    it('runs a $$postDigest function after each digest', function() {
+      scope.counter = 0;
+
+      scope.$$postDigest(function() {
+        scope.counter++;
+      })
+
+      expect(scope.counter).to.equal(0)
+
+      scope.$digest();
+      expect(scope.counter).to.equal(1)
+
+      scope.$digest();
+      expect(scope.counter).to.equal(1)
+    })
+
+    it('does not imclue a $$postDigest in the digest', function() {
+      scope.aValue = 'original value';
+
+      scope.$$postDigest(function() {
+        scope.aValue = 'changed value';
+      })
+
+      scope.$watch(
+        function(scope) {
+          return scope.aValue;
+        },
+        function(newValue, oldValue, scope) {
+          scope.watchedValue = newValue;
+        }
+      )
+
+      scope.$digest();
+      expect(scope.watchedValue).to.equal('original value')
+
+      scope.$digest();
+      expect(scope.watchedValue).to.equal('changed value')
+    })
+  });
 });
