@@ -573,4 +573,90 @@ describe('Scope', function() {
       expect(scope.watchedValue).to.equal('changed value')
     })
   });
+
+  describe('Exception Handling', function() {
+    var scope;
+
+    beforeEach(function() {
+      scope = new Scope();
+    })
+
+    it('cateches exceptions in watch functions and continues', function() {
+      scope.aValue = 'abc';
+      scope.counter = 0;
+
+      scope.$watch(
+        function(scope) { throw 'error'; },
+        function(newValue, oldValue, scope) {}
+      );
+
+      scope.$watch(
+        function(scope) { return scope.aValue; },
+        function(newValue, oldValue, scope) {
+          scope.counter++;
+        }
+      )
+
+      scope.$digest();
+      expect(scope.counter).to.equal(1)
+    })
+
+    it('catches exceptions in listener functions and continues', function() {
+      scope.aValue = 'abc';
+      scope.counter = 0;
+
+      scope.$watch(
+        function(scope) { return scope.aValue; },
+        function(newValue, oldValue, scope) {
+          throw 'Error';
+        }
+      )
+
+      scope.$watch(
+        function(scope) { return scope.aValue; },
+        function(newValue, oldValue, scope) {
+          scope.counter++;
+        }
+      )
+
+      scope.$digest();
+      expect(scope.counter).to.equal(1);
+    })
+
+    it('cateches exceptions in $evalAsync', function(done) {
+      scope.aValue = 'abc';
+      scope.counter = 0;
+
+      scope.$watch(
+        function() { return scope.aValue; },
+        function(newValue, oldValue) {
+          scope.counter++;
+        }
+      );
+
+      scope.$evalAsync(function(scope) {
+        throw 'Error';
+      });
+
+      setTimeout(function() {
+        expect(scope.counter).to.equal(1);
+        done();
+      }, 50);
+    })
+
+    it('catches excpetionsin $$postDigest', function() {
+      var didRun = false;
+
+      scope.$$postDigest(function() {
+        throw 'Error';
+      })
+
+      scope.$$postDigest(function() {
+        didRun = true;
+      });
+
+      scope.$digest();
+      expect(didRun).to.be.true;
+    })
+  });
 });
